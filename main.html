@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+<script type="text/javascript" src="SimpleImage.js"></script>
+
+<h1>Morning Sharing</h1>
+
+<tr>
+    <canvas id="image_input"></canvas>
+    <canvas id="image_output"></canvas>
+</tr>
+
+<p>
+    <input type="file" multiple="false" accept="image/*" id="myimg"> 
+    <button id="SR">Sharpen image</button>
+</p>
+
+
+<script>
+    
+   async function load_model(){
+    model_file = "http://127.0.0.1:8887/model.json";
+    const model = await tf.loadLayersModel(model_file);
+    console.log("model loaded");
+    }
+
+    const canvas1 = document.getElementById("image_input");
+    const canvas2 = document.getElementById("image_output");
+    const file = document.getElementById("myimg");
+    const ctx1 = canvas1.getContext("2d");
+    const ctx2 = canvas2.getContext("2d");
+    canvas1.height = 512; 
+    canvas1.width = 512;
+    canvas2.height = 512; 
+    canvas2.width = 512;
+    var img_array;
+    var img = new Image();
+    var img_prediction  = new Image();
+
+
+
+    file.onchange = function upload(){
+        
+        img.src = URL.createObjectURL(file.files[0]);
+        load_model();
+        img.onload = function(){
+            img.height = canvas1.height;
+            img.width = canvas1.height;
+            canvas1.src = ctx1.drawImage(img,0,0,img.height,img.width);
+            img_array = tf.browser.fromPixels(canvas1);
+            img_prediction = tf.browser.toPixels(img_array, canvas2);
+            //canvas2.src = ctx2.drawImage(img_prediction,0,0,img.height,img.width);
+        }
+    }
+    
+
+
+</script>
+</html>
+
